@@ -1,0 +1,4 @@
+<Files "sluz.class.php">
+    SetHandler default-handler
+    ForceType text/plain
+</Files>
