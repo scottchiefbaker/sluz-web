@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sluz — A lite, Smarty-like PHP templating engine</title>
+  <meta name="description" content="Sluz is a minimalistic, zero-dependency, single-file PHP templating engine with familiar Smarty-like syntax. Separate logic (.php) from presentation (.stpl).">
+  <meta name="theme-color" content="#0b0f19">
+  <link rel="canonical" href="https://sluz.org/">
+  <meta property="og:title" content="Sluz — A lite, Smarty-like PHP templating engine">
+  <meta property="og:description" content="Single-file · Zero dependencies · PHP 8.x+ · Smarty-like syntax for clean .stpl templates.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sluz.org/">
+  <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+  <!-- Local vendor assets — no CDN -->
+  <link rel="stylesheet" href="vendor/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Sluz",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "PHP 8.x+",
+    "description": "Minimalistic single-file PHP templating engine with Smarty-like syntax.",
+    "softwareVersion": "0.9.6",
+    "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+    "license": "https://www.gnu.org/licenses/gpl-3.0.html"
+  }
+  </script>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#mainNavList" data-bs-smooth-scroll="true" tabindex="0">
+
+  <!-- Navbar -->
+  <nav id="mainNav" class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#top">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" width="32" height="32" role="img" aria-label="Sluz logo">
+            <defs>
+              <linearGradient id="gNav" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#818cf8"/><stop offset="1" stop-color="#22d3ee"/>
+              </linearGradient>
+            </defs>
+            <rect width="64" height="64" rx="14" fill="#0b0f19"/>
+            <rect x="1.6" y="1.6" width="60.8" height="60.8" rx="12.4" fill="none" stroke="url(#gNav)" stroke-width="3"/>
+            <path d="M27 17c-4 0-6 2-6 5.5V28c0 2.5-1.7 4-5 4v2c3.3 0 5 1.5 5 4v5.5c0 3.5 2 5.5 6 5.5" fill="none" stroke="url(#gNav)" stroke-width="5" stroke-linecap="round"/>
+            <path d="M37 17c4 0 6 2 6 5.5V28c0 2.5 1.7 4 5 4v2c-3.3 0-5 1.5-5 4v5.5c0 3.5-2 5.5-6 5.5" fill="none" stroke="url(#gNav)" stroke-width="5" stroke-linecap="round"/>
+            <circle cx="32" cy="32" r="2.4" fill="#22d3ee"/>
+          </svg>
+        </span>
+        <span class="brand-text">sluz</span>
+        <span class="brand-pron d-none d-sm-inline">/slooz/</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1" id="mainNavList">
+          <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+          <li class="nav-item"><a class="nav-link" href="#syntax">Syntax</a></li>
+          <li class="nav-item"><a class="nav-link" href="#quickstart">Quick start</a></li>
+          <li class="nav-item"><a class="nav-link" href="#security">Security</a></li>
+          <li class="nav-item"><a class="nav-link" href="#ecosystem">Ecosystem</a></li>
+          <li class="nav-item ms-lg-2">
+            <a class="btn btn-ghost btn-sm" href="https://github.com/scottchiefbaker/sluz" target="_blank" rel="noopener">
+              <i class="bi bi-github me-1"></i> GitHub
+            </a>
+          </li>
+          <li class="nav-item ms-lg-1">
+            <a class="btn btn-gradient btn-sm" href="#quickstart">Get started</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header id="top" class="hero position-relative overflow-hidden">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="container position-relative">
+      <div class="row align-items-center g-4 g-lg-5">
+        <div class="col-lg-6">
+          <div class="reveal">
+            <div class="hero-badges d-flex flex-wrap gap-2 mb-3">
+              <span class="badge-soft" title="Current version"><i class="bi bi-tag me-1"></i> v0.9.6</span>
+              <span class="badge-soft"><i class="bi bi-code-square me-1"></i> PHP 8.x+</span>
+              <span class="badge-soft"><i class="bi bi-box me-1"></i> Zero dependencies</span>
+              <span class="badge-soft"><i class="bi bi-file-earmark-code me-1"></i> Single file</span>
+            </div>
+            <h1 class="display-5 fw-bold lh-tight mb-3">
+              A <span class="text-gradient">lite, Smarty-like</span><br>templating system<br>for PHP.
+            </h1>
+            <p class="lead text-secondary mb-3">
+              Separate logic (<code>.php</code>) from presentation (<code>.stpl</code>) with a
+              tiny, single-file engine that speaks the Smarty syntax you already know.
+            </p>
+            <div class="d-flex flex-wrap gap-2 mb-4">
+              <a class="btn btn-gradient btn-lg" href="#quickstart"><i class="bi bi-lightning-charge me-1"></i> Get started</a>
+              <a class="btn btn-ghost btn-lg" href="https://github.com/scottchiefbaker/sluz" target="_blank" rel="noopener"><i class="bi bi-github me-1"></i> Star on GitHub</a>
+            </div>
+            <div class="cmd-pill d-inline-flex align-items-center gap-2" data-code>
+              <span class="cmd-prompt">$</span>
+              <code id="install-cmd">composer require sluz/sluz</code>
+              <button class="copy-btn" type="button" data-copy-target="#install-cmd" aria-label="Copy install command">
+                <i class="bi bi-clipboard"></i>
+              </button>
+            </div>
+            <div class="hero-meta d-flex flex-wrap gap-3 mt-3 small text-secondary">
+              <span><i class="bi bi-check-circle me-1 text-success"></i> E_ALL clean</span>
+              <span><i class="bi bi-check-circle me-1 text-success"></i> Fully tested on PHP 8.x+</span>
+              <span><i class="bi bi-check-circle me-1 text-success"></i> GPL-3.0-or-later</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="reveal" style="--delay:120ms">
+            <div class="code-stack">
+              <div class="row g-3">
+                <div class="col-12">
+                  <div class="window" data-code>
+                    <div class="window-head">
+                      <span class="dots"><i></i><i></i><i></i></span>
+                      <span class="window-title">script.php</span>
+                      <button class="copy-btn sm" type="button" data-copy-target="#code-php" aria-label="Copy PHP example"><i class="bi bi-clipboard"></i></button>
+                    </div>
+<pre><code id="code-php"><span class="tk-kw">include</span> <span class="tk-str">'sluz.class.php'</span>;
+<span class="tk-var">$s</span> = <span class="tk-kw">new</span> <span class="tk-fn">sluz</span>();
+
+<span class="tk-var">$s</span>-><span class="tk-fn">assign</span>(<span class="tk-str">'name'</span>, <span class="tk-str">'Jason'</span>);
+<span class="tk-var">$s</span>-><span class="tk-fn">assign</span>(<span class="tk-str">'items'</span>, [<span class="tk-str">'PHP'</span>, <span class="tk-str">'Perl'</span>, <span class="tk-str">'JS'</span>]);
+
+<span class="tk-kw">print</span> <span class="tk-var">$s</span>-><span class="tk-fn">fetch</span>(<span class="tk-str">'tpls/script.stpl'</span>);</code></pre>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="window" data-code>
+                    <div class="window-head">
+                      <span class="dots"><i></i><i></i><i></i></span>
+                      <span class="window-title">tpls/script.stpl</span>
+                      <button class="copy-btn sm" type="button" data-copy-target="#code-stpl" aria-label="Copy template example"><i class="bi bi-clipboard"></i></button>
+                    </div>
+<pre><code id="code-stpl"><span class="tk-tag">&lt;h1&gt;</span>Hello <span class="tk-var">{$name</span><span class="tk-mod">|default:"world"</span><span class="tk-var">}</span><span class="tk-tag">&lt;/h1&gt;</span>
+
+<span class="tk-tag">&lt;ul&gt;</span>
+<span class="tk-kw">{foreach</span> <span class="tk-var">$items</span> <span class="tk-kw">as</span> <span class="tk-var">$item</span><span class="tk-kw">}</span>
+  <span class="tk-tag">&lt;li&gt;</span><span class="tk-var">{$item</span><span class="tk-mod">|strtoupper</span><span class="tk-var">}</span><span class="tk-tag">&lt;/li&gt;</span>
+<span class="tk-kw">{/foreach}</span>
+<span class="tk-tag">&lt;/ul&gt;</span>
+</code></pre>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="preview-window">
+                    <div class="preview-head"><i class="bi bi-eye me-1"></i> Rendered output</div>
+                    <div class="preview-body">
+                      <div class="preview-title">Hello Jason</div>
+                      <ul class="preview-list">
+                        <li>PHP</li><li>PERL</li><li>JS</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Features -->
+  <section id="features" class="section">
+    <div class="container">
+      <div class="section-head text-center mx-auto reveal">
+        <div class="eyebrow">Why Sluz?</div>
+        <h2 class="h1 fw-bold">Everything you need.<br>Nothing you don't.</h2>
+        <p class="text-secondary mx-auto" style="max-width:640px">Drop in one file, and get familiar Smarty-like syntax, modifier chaining, and layout tools — with zero bloat and zero surprises.</p>
+      </div>
+
+      <div class="row g-3 g-lg-4 mt-1">
+        <div class="col-md-6 col-lg-3 reveal"><div class="feature-card h-100">
+          <div class="icon-wrap"><i class="bi bi-file-earmark-code"></i></div>
+          <h3 class="h6 fw-semibold">Single file</h3>
+          <p class="small text-secondary mb-0">Just <code>sluz.class.php</code>. No autoloader maze, no build step. Simple. Copy it and go.</p>
+        </div></div>
+        <div class="col-md-6 col-lg-3 reveal" style="--delay:60ms"><div class="feature-card h-100">
+          <div class="icon-wrap"><i class="bi bi-box-seam"></i></div>
+          <h3 class="h6 fw-semibold">Zero dependencies</h3>
+          <p class="small text-secondary mb-0">Requires PHP 8.x+ and nothing else. Composer-friendly but not Composer-required.</p>
+        </div></div>
+        <div class="col-md-6 col-lg-3 reveal" style="--delay:120ms"><div class="feature-card h-100">
+          <div class="icon-wrap"><i class="bi bi-braces"></i></div>
+          <h3 class="h6 fw-semibold">Smarty-like syntax</h3>
+          <p class="small text-secondary mb-0">If you know Smarty, you know Sluz. Variables, blocks, and filters feel like home.</p>
+        </div></div>
+        <div class="col-md-6 col-lg-3 reveal" style="--delay:180ms"><div class="feature-card h-100">
+          <div class="icon-wrap"><i class="bi bi-link-45deg"></i></div>
+          <h3 class="h6 fw-semibold">Modifiers &amp; chaining</h3>
+          <p class="small text-secondary mb-0"><code>{$var|default:"?"|strtoupper}</code> — pipe as many native PHP functions as you like.</p>
+        </div></div>
+
+        <div class="col-md-6 col-lg-3 reveal"><div class="feature-card h-100">
+          <div class="icon-wrap"><i class="bi bi-diagram-3"></i></div>
+          <h3 class="h6 fw-semibold">Dot-notation access</h3>
+          <p class="small text-secondary mb-0"><code>{$user.name.first}</code> &rarr; <code>$user['name']['first']</code>. Arrays stay ergonomic.</p>
+        </div></div>
+        <div class="col-md-6 col-lg-3 reveal" style="--delay:60ms"><div class="feature-card h-100">
+          <div class="icon-wrap"><i class="bi bi-calculator"></i></div>
+          <h3 class="h6 fw-semibold">Expressions</h3>
+          <p class="small text-secondary mb-0"><code>{$x + 3}</code>, <code>{count($arr)}</code> and friends — math and function calls right in templates.</p>
+        </div></div>
+        <div class="col-md-6 col-lg-3 reveal" style="--delay:120ms"><div class="feature-card h-100">
+          <div class="icon-wrap"><i class="bi bi-arrow-repeat"></i></div>
+          <h3 class="h6 fw-semibold">foreach superpowers</h3>
+          <p class="small text-secondary mb-0"><code>$__FOREACH_FIRST</code>, <code>$__FOREACH_LAST</code>, <code>$__FOREACH_INDEX</code> for clean list rendering.</p>
+        </div></div>
+        <div class="col-md-6 col-lg-3 reveal" style="--delay:180ms"><div class="feature-card h-100">
+          <div class="icon-wrap"><i class="bi bi-layout-split"></i></div>
+          <h3 class="h6 fw-semibold">Includes &amp; layouts</h3>
+          <p class="small text-secondary mb-0"><code>{include}</code> and <code>parent/child</code> templates for composable pages.</p>
+        </div></div>
+      </div>
+
+      <div class="row g-2 mt-4 justify-content-center text-center small text-secondary reveal">
+        <div class="col-auto d-flex align-items-center gap-2"><i class="bi bi-shield-check text-success"></i> <code>{literal}</code> &amp; <code>{* comments *}</code></div>
+        <div class="col-auto d-none d-sm-block opacity-25">·</div>
+        <div class="col-auto d-flex align-items-center gap-2"><i class="bi bi-input-cursor text-info"></i> Custom delimiters via <code>set_delimiters('[', ']')</code></div>
+        <div class="col-auto d-none d-sm-block opacity-25">·</div>
+        <div class="col-auto d-flex align-items-center gap-2"><i class="bi bi-braces-asterisk text-warning"></i> Inline &amp; simple modes</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Syntax -->
+  <section id="syntax" class="section section-alt">
+    <div class="container">
+      <div class="row align-items-end g-3 mb-3">
+        <div class="col-lg-8 reveal">
+          <div class="eyebrow">Cheat sheet</div>
+          <h2 class="h1 fw-bold mb-2">Smarty-like, without the weight.</h2>
+          <p class="text-secondary mb-0">A tiny vocabulary that covers the 95% you actually use.</p>
+        </div>
+        <div class="col-lg-4 text-lg-end reveal" style="--delay:80ms">
+          <a class="btn btn-ghost btn-sm" href="https://github.com/scottchiefbaker/sluz#readme" target="_blank" rel="noopener"><i class="bi bi-book me-1"></i> Full README</a>
+        </div>
+      </div>
+
+      <div class="syntax-wrap reveal">
+        <div class="table-responsive">
+          <table class="table syntax-table align-middle mb-0">
+            <thead>
+              <tr><th>Syntax</th><th>Example</th><th>Output</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>{$var}</code></td><td><code>{$name}</code></td><td>Jason</td></tr>
+              <tr><td><code>{$hash.key}</code> / <code>{$arr.0}</code></td><td><code>{$cust.first}</code></td><td>Scott</td></tr>
+              <tr><td><code>{$var|modifier}</code></td><td><code>{$animal|strtoupper}</code></td><td>KITTEN</td></tr>
+              <tr><td><code>{$var|mod:params}</code></td><td><code>{$greet|substr:0,3}</code></td><td>Hel</td></tr>
+              <tr><td><code>{$var|mod1|mod2}</code></td><td><code>{$word|strtolower|ucfirst}</code></td><td>Crazy</td></tr>
+              <tr><td><code>{$var|default:"val"}</code></td><td><code>{$null|default:"?"}</code></td><td>?</td></tr>
+              <tr><td><code>{$var|escape}</code></td><td><code>{$name|escape}</code></td><td class="text-secondary">&lt;script&gt; → &amp;lt;script&amp;gt;</td></tr>
+              <tr><td><code>{$expr}</code></td><td><code>{$number + 3}</code></td><td>18</td></tr>
+              <tr><td><code>{if}…{elseif}…{else}{/if}</code></td><td><code>{if $x}yes{else}no{/if}</code></td><td>yes</td></tr>
+              <tr><td><code>{foreach $a as $v}</code></td><td><code>{foreach $items as $x}{$x}{/foreach}</code></td><td>onetwothree</td></tr>
+              <tr><td><code>{foreach $a as $k => $v}</code></td><td><code>{foreach $m as $k => $v}{$k}{/foreach}</code></td><td>012</td></tr>
+              <tr><td><code>$__FOREACH_FIRST/_LAST/_INDEX</code></td><td><code>{if $__FOREACH_FIRST}…{/if}</code></td><td class="text-secondary">—</td></tr>
+              <tr><td><code>{include file='…'}</code></td><td><code>{include file='header.stpl'}</code></td><td class="text-secondary">—</td></tr>
+              <tr><td><code>{literal}…{/literal}</code></td><td><code>{literal}function foo() { {/literal}</code></td><td><code>function foo() {</code></td></tr>
+              <tr><td><code>{* comment *}</code></td><td><code>{* hidden *}</code></td><td class="text-secondary"><em>(empty)</em></td></tr>
+              <tr><td><code>{function()}</code></td><td><code>{count($array)}</code></td><td>3</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick start -->
+  <section id="quickstart" class="section">
+    <div class="container">
+      <div class="section-head text-center mx-auto reveal">
+        <div class="eyebrow">Quick start</div>
+        <h2 class="h1 fw-bold">From zero to rendered in 30 seconds.</h2>
+      </div>
+
+      <div class="row g-4 mt-1">
+        <div class="col-lg-4 reveal">
+          <div class="step-card h-100">
+            <div class="step-num">1</div>
+            <h3 class="h5 fw-semibold">Install</h3>
+            <p class="small text-secondary">Composer or single-file drop-in — you choose.</p>
+            <div class="window window-compact mt-3" data-code>
+              <div class="window-head"><span class="window-title">Terminal</span><button class="copy-btn sm" type="button" data-copy-target="#qs-install" aria-label="Copy"><i class="bi bi-clipboard"></i></button></div>
+<pre><code id="qs-install"><span class="tk-cmt"># via Composer</span>
+composer require sluz/sluz
+
+<span class="tk-cmt"># or just grab the one file you need</span>
+curl -O https://raw.githubusercontent.com/scottchiefbaker/sluz/master/sluz.class.php</code></pre>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 reveal" style="--delay:80ms">
+          <div class="step-card h-100">
+            <div class="step-num">2</div>
+            <h3 class="h5 fw-semibold">Create a template</h3>
+            <p class="small text-secondary">Save as <code>tpls/hello.stpl</code> next to your script.</p>
+            <div class="window window-compact mt-3" data-code>
+              <div class="window-head"><span class="window-title">tpls/hello.stpl</span><button class="copy-btn sm" type="button" data-copy-target="#qs-tpl" aria-label="Copy"><i class="bi bi-clipboard"></i></button></div>
+<pre><code id="qs-tpl"><span class="tk-tag">&lt;h1&gt;</span>Hello <span class="tk-var">{$name}</span>!<span class="tk-tag">&lt;/h1&gt;</span>
+
+<span class="tk-kw">{if</span> <span class="tk-var">$items</span><span class="tk-kw">}</span>
+  <span class="tk-tag">&lt;ul&gt;</span>
+  <span class="tk-kw">{foreach</span> <span class="tk-var">$items</span> <span class="tk-kw">as</span> <span class="tk-var">$item</span><span class="tk-kw">}</span>
+    <span class="tk-tag">&lt;li&gt;</span><span class="tk-var">{$item}</span><span class="tk-tag">&lt;/li&gt;</span>
+  <span class="tk-kw">{/foreach}</span>
+  <span class="tk-tag">&lt;/ul&gt;</span>
+<span class="tk-kw">{/if}</span></code></pre>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 reveal" style="--delay:160ms">
+          <div class="step-card h-100">
+            <div class="step-num">3</div>
+            <h3 class="h5 fw-semibold">Render it</h3>
+            <p class="small text-secondary">Assign data and fetch. That's it.</p>
+            <div class="window window-compact mt-3" data-code>
+              <div class="window-head"><span class="window-title">hello.php</span><button class="copy-btn sm" type="button" data-copy-target="#qs-php" aria-label="Copy"><i class="bi bi-clipboard"></i></button></div>
+<pre><code id="qs-php"><span class="tk-kw">&lt;?php</span>
+<span class="tk-kw">require</span> <span class="tk-str">'sluz.class.php'</span>;
+<span class="tk-var">$s</span> = <span class="tk-kw">new</span> <span class="tk-fn">sluz</span>();
+
+<span class="tk-var">$s</span>-><span class="tk-fn">assign</span>(<span class="tk-str">'name'</span>, <span class="tk-str">'Ada'</span>);
+<span class="tk-var">$s</span>-><span class="tk-fn">assign</span>([<span class="tk-str">'items'</span> => [<span class="tk-str">'Logic'</span>,<span class="tk-str">'Presentation'</span>]]);
+
+<span class="tk-kw">print</span> <span class="tk-var">$s</span>-><span class="tk-fn">fetch</span>(<span class="tk-str">'tpls/hello.stpl'</span>);
+</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modes -->
+      <div class="row g-3 mt-4">
+        <div class="col-12 reveal"><h3 class="h5 fw-semibold mb-0">Pick your mode</h3><p class="small text-secondary">Classic, simple, or inline — same engine, three ergonomics.</p></div>
+        <div class="col-md-4 reveal"><div class="mode-card h-100">
+          <div class="mode-head"><i class="bi bi-layers"></i> Classic</div>
+          <p class="small text-secondary">Full control: assign, fetch, parent templates.</p>
+<pre class="mode-code"><code><span class="tk-var">$s</span> = <span class="tk-kw">new</span> <span class="tk-fn">sluz</span>();
+<span class="tk-var">$s</span>-><span class="tk-fn">assign</span>(<span class="tk-str">'age', 38</span>);
+
+<span class="tk-kw">print</span> <span class="tk-var">$s</span>-><span class="tk-fn">fetch</span>(<span class="tk-str">'tpls/index.stpl'</span>);</code></pre>
+        </div></div>
+        <div class="col-md-4 reveal" style="--delay:60ms"><div class="mode-card h-100">
+          <div class="mode-head"><i class="bi bi-magic"></i> Simple mode</div>
+          <p class="small text-secondary">Singleton helper — auto-renders <code>tpls/[script].stpl</code> in the destructor.</p>
+<pre class="mode-code"><code><span class="tk-fn">sluz</span>(<span class="tk-str">'name'</span>, <span class="tk-str">'Ada'</span>);
+<span class="tk-fn">sluz</span>(<span class="tk-str">'color'</span>, <span class="tk-str">'green'</span>);
+<span class="tk-cmt">// done — template renders itself</span></code></pre>
+        </div></div>
+        <div class="col-md-4 reveal" style="--delay:120ms"><div class="mode-card h-100">
+          <div class="mode-head"><i class="bi bi-file-code"></i> Inline mode</div>
+          <p class="small text-secondary">Template lives in the same file after <code>__halt_compiler();</code>. Great for single file scripts.</p>
+<pre class="mode-code"><code><span class="tk-var">$s</span>-><span class="tk-fn">fetch</span>(<span class="tk-kw">SLUZ_INLINE</span>);
+
+<span class="tk-kw">__halt_compiler</span>();
+<span class="tk-tag">&lt;h1&gt;</span>Hello <span class="tk-var">{$name}</span><span class="tk-tag">&lt;/h1&gt;</span></code></pre>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Security -->
+  <section id="security" class="section section-alt">
+    <div class="container">
+      <div class="row g-4 align-items-center">
+        <div class="col-lg-5 reveal">
+          <div class="eyebrow"><i class="bi bi-shield-lock me-1"></i> Security</div>
+          <h2 class="h1 fw-bold">Escape by default when you want it.</h2>
+          <p class="text-secondary">Variables are verbatim by default. Wrap untrusted output with <code>|escape</code>, or flip the safety switch and auto-escape everything.</p>
+          <ul class="small text-secondary ps-3">
+            <li><code>{$var|escape}</code> — <code>htmlspecialchars</code></li>
+            <li><code>{$var|escape:"url"}</code> / <code>|escape:"js"</code> for URL and JS contexts</li>
+            <li><code>$s-&gt;setEscapeHtml(true)</code> + <code>|raw</code> to opt out when HTML is trusted</li>
+          </ul>
+          <div class="d-flex gap-2 mt-3">
+            <a class="btn btn-ghost btn-sm" href="https://github.com/scottchiefbaker/sluz#-security" target="_blank" rel="noopener">Read the security notes</a>
+          </div>
+        </div>
+        <div class="col-lg-7 reveal" style="--delay:100ms">
+          <div class="window" data-code>
+            <div class="window-head">
+              <span class="dots"><i></i><i></i><i></i></span>
+              <span class="window-title">escaping — tpls/secure.stpl</span>
+              <button class="copy-btn sm" type="button" data-copy-target="#code-secure" aria-label="Copy"><i class="bi bi-clipboard"></i></button>
+            </div>
+<pre><code id="code-secure"><span class="tk-cmt">{* manual escaping *}</span>
+<span class="tk-var">{$user_input</span><span class="tk-mod">|escape</span><span class="tk-var">}</span>          <span class="tk-cmt">{* HTML-encode *}</span>
+<span class="tk-var">{$redirect_url</span><span class="tk-mod">|escape:"url"</span><span class="tk-var">}</span>  <span class="tk-cmt">{* URL-encode *}</span>
+<span class="tk-var">{$inline_js</span><span class="tk-mod">|escape:"js"</span><span class="tk-var">}</span>      <span class="tk-cmt">{* JSON-encode for JS *}</span>
+
+<span class="tk-cmt">{* auto-escape mode (PHP) *}</span>
+<span class="tk-var">$s</span>-><span class="tk-fn">setEscapeHtml</span>(<span class="tk-kw">true</span>);
+
+<span class="tk-var">{$user_input}</span>                <span class="tk-cmt">{* now auto-escaped *}</span>
+<span class="tk-var">{$user_input</span><span class="tk-mod">|escape</span><span class="tk-var">}</span>         <span class="tk-cmt">{* not double-escaped *}</span>
+<span class="tk-var">{$trusted_html</span><span class="tk-mod">|raw</span><span class="tk-var">}</span>          <span class="tk-cmt">{* opt out — verbatim *}</span></code></pre>
+          </div>
+          <div class="callout mt-3">
+            <i class="bi bi-info-circle me-2 text-info"></i> Auto-escaping applies to <code>{$var}</code> blocks only. Expression blocks like <code>{$x + 3}</code> and function calls like <code>{count($arr)}</code> are not auto-escaped.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- API quick ref -->
+  <section class="section">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-6 reveal">
+          <h2 class="h4 fw-bold">Tiny API, familiar feel.</h2>
+          <p class="small text-secondary">Mirrors the bits of Smarty you actually reach for.</p>
+          <div class="api-list">
+            <div class="api-row"><code>$s-&gt;assign('key', 'value')</code><span>single or bulk <code>['k'=>'v']</code></span></div>
+            <div class="api-row"><code>$s-&gt;fetch('tpls/a.stpl')</code><span>render template file to string</span></div>
+            <div class="api-row"><code>$s-&gt;fetch('child.stpl', 'parent.stpl')</code><span>parent/child layout</span></div>
+            <div class="api-row"><code>$s-&gt;parse_string('Hi {$n}')</code><span>render a string, not a file</span></div>
+            <div class="api-row"><code>$s-&gt;set_delimiters('[', ']')</code><span>when your content loves <code>{braces}</code></span></div>
+          </div>
+        </div>
+        <div class="col-lg-6 reveal" style="--delay:80ms">
+          <h3 class="h6 fw-semibold text-secondary text-uppercase ls-wide">Requirements &amp; testing</h3>
+          <div class="req-card">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="req-icon"><i class="bi bi-check2-square"></i></div>
+              <div>
+                <div class="fw-semibold">PHP 8.x+ · Zero deps · E_ALL clean</div>
+                <div class="small text-secondary">Fully tested on PHP: v8.x+</div>
+              </div>
+            </div>
+<pre class="req-code"><code>php unit_tests/tests.php           <span class="tk-cmt"># full suite</span>
+php unit_tests/tests.php "Foreach" <span class="tk-cmt"># filter by name</span>
+php unit_tests/tests.php --simple  <span class="tk-cmt"># quiet counts only</span></code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ecosystem -->
+  <section id="ecosystem" class="section section-alt">
+    <div class="container">
+      <div class="section-head text-center mx-auto reveal">
+        <div class="eyebrow">Ecosystem</div>
+        <h2 class="h2 fw-bold">One idea, three runtimes.</h2>
+        <p class="text-secondary">Sluz started in PHP, but the same light Smarty spirit lives on in Perl and JavaScript.</p>
+      </div>
+      <div class="row g-3 justify-content-center mt-1">
+        <div class="col-md-4 reveal"><a class="eco-card h-100 text-decoration-none" href="https://github.com/scottchiefbaker/sluz" target="_blank" rel="noopener">
+          <div class="eco-icon php"><i class="bi bi-filetype-php"></i></div>
+          <h3 class="h5 fw-semibold">Sluz <span class="text-secondary fw-normal">/ PHP</span></h3>
+          <p class="small text-secondary mb-2">This project. Single-file engine, Composer-ready.</p>
+          <span class="small fw-semibold">sluz/sluz on Packagist <i class="bi bi-box-arrow-up-right ms-1"></i></span>
+        </a></div>
+        <div class="col-md-4 reveal" style="--delay:80ms"><a class="eco-card h-100 text-decoration-none" href="https://github.com/scottchiefbaker/perl-Template-Sluz" target="_blank" rel="noopener">
+          <div class="eco-icon perl"><i class="bi bi-terminal"></i></div>
+          <h3 class="h5 fw-semibold">Template::Sluz <span class="text-secondary fw-normal">/ Perl</span></h3>
+          <p class="small text-secondary mb-2">The same syntax for your Perl stack.</p>
+          <span class="small fw-semibold">perl-Template-Sluz <i class="bi bi-box-arrow-up-right ms-1"></i></span>
+        </a></div>
+        <div class="col-md-4 reveal" style="--delay:160ms"><a class="eco-card h-100 text-decoration-none" href="https://github.com/scottchiefbaker/js-Template-Sluz" target="_blank" rel="noopener">
+          <div class="eco-icon js"><i class="bi bi-braces"></i></div>
+          <h3 class="h5 fw-semibold">Template-Sluz <span class="text-secondary fw-normal">/ JavaScript</span></h3>
+          <p class="small text-secondary mb-2">Client-side or Node — identical template language.</p>
+          <span class="small fw-semibold">js-Template-Sluz <i class="bi bi-box-arrow-up-right ms-1"></i></span>
+        </a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section cta-section">
+    <div class="container">
+      <div class="cta-card text-center reveal">
+        <h2 class="h1 fw-bold mb-2">Keep your PHP tidy.</h2>
+        <p class="text-secondary mx-auto mb-4" style="max-width:560px">One file to include, Smarty-like syntax to love, and no hidden magic. Grab Sluz and keep presentation where it belongs.</p>
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+          <a class="btn btn-gradient btn-lg" href="https://github.com/scottchiefbaker/sluz/archive/refs/heads/master.zip"><i class="bi bi-download me-1"></i> Download .zip</a>
+          <a class="btn btn-ghost btn-lg" href="https://github.com/scottchiefbaker/sluz" target="_blank" rel="noopener"><i class="bi bi-github me-1"></i> View on GitHub</a>
+          <a class="btn btn-ghost btn-lg" href="https://packagist.org/packages/sluz/sluz" target="_blank" rel="noopener"><i class="bi bi-box-seam me-1"></i> Packagist</a>
+        </div>
+        <div class="small text-secondary mt-3">Or <code>composer require sluz/sluz</code> — your call.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-5">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="brand-mark sm" aria-hidden="true">
+              <svg viewBox="0 0 64 64" width="28" height="28"><use href="#gNav"/></svg>
+            </span>
+            <span class="fw-semibold">sluz</span> <span class="text-secondary small">pronounced “slooz”</span>
+          </div>
+          <p class="small text-secondary mb-2">A lite, Smarty-like templating system. One file, zero dependencies.</p>
+          <p class="small text-secondary mb-0">© 2026 The Sluz Project · <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener">GPL-3.0-or-later</a></p>
+        </div>
+        <div class="col-6 col-lg-2">
+          <div class="footer-head">Project</div>
+          <ul class="footer-links">
+            <li><a href="https://github.com/scottchiefbaker/sluz" target="_blank" rel="noopener">GitHub</a></li>
+            <li><a href="https://packagist.org/packages/sluz/sluz" target="_blank" rel="noopener">Packagist</a></li>
+            <li><a href="https://github.com/scottchiefbaker/sluz/releases" target="_blank" rel="noopener">Releases</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-lg-2">
+          <div class="footer-head">Docs</div>
+          <ul class="footer-links">
+            <li><a href="https://github.com/scottchiefbaker/sluz#readme" target="_blank" rel="noopener">README</a></li>
+            <li><a href="https://github.com/scottchiefbaker/sluz/tree/master/docs" target="_blank" rel="noopener">Examples</a></li>
+            <li><a href="https://github.com/scottchiefbaker/sluz/blob/master/sluz.class.php" target="_blank" rel="noopener">Source (single file)</a></li>
+          </ul>
+        </div>
+        <div class="col-12 col-lg-3">
+          <div class="footer-head">Stay tidy</div>
+          <p class="small text-secondary">Built for <code>error_reporting(E_ALL)</code> cleanliness. No notices, no warnings, just templates.</p>
+          <a class="small" href="#top">Back to top <i class="bi bi-arrow-up-short"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="vendor/bootstrap/bootstrap.bundle.min.js"></script>
+  <script src="js/site.js"></script>
+</body>
+</html>
