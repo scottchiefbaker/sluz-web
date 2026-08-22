@@ -50,7 +50,7 @@
             <circle cx="32" cy="32" r="2.4" fill="#22d3ee"/>
           </svg>
         </span>
-        <span class="brand-text">sluz</span>
+        <span class="brand-text">Sluz</span>
         <span class="brand-pron d-none d-sm-inline">/slooz/</span>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -426,18 +426,16 @@ curl -O https://raw.githubusercontent.com/scottchiefbaker/sluz/master/sluz.class
           <div class="api-list">
             <div class="api-row"><code>$s-&gt;assign('key', 'value')</code><span>single or bulk <code>['k'=>'v']</code></span></div>
             <div class="api-row"><code>$s-&gt;fetch('tpls/a.stpl')</code><span>render template file to string</span></div>
-            <div class="api-row"><code>$s-&gt;fetch('child.stpl', 'parent.stpl')</code><span>parent/child layout</span></div>
-            <div class="api-row"><code>$s-&gt;parse_string('Hi {$n}')</code><span>render a string, not a file</span></div>
-            <div class="api-row"><code>$s-&gt;set_delimiters('[', ']')</code><span>when your content loves <code>{braces}</code></span></div>
+            <div class="api-row"><code>$s-&gt;display('tpls/b.stpl')</code><span>print rendered template</span></div>
           </div>
         </div>
         <div class="col-lg-6 reveal" style="--delay:80ms">
-          <h3 class="h6 fw-semibold text-secondary text-uppercase ls-wide">Requirements &amp; testing</h3>
+          <h3 class="h6 fw-semibold text-secondary text-uppercase ls-wide">Testing methodology</h3>
           <div class="req-card">
             <div class="d-flex align-items-center gap-3 mb-3">
               <div class="req-icon"><i class="bi bi-check2-square"></i></div>
               <div>
-                <div class="fw-semibold">PHP 8.x+ · Zero deps · E_ALL clean</div>
+                <div class="fw-semibold">250+ Unit tests covering 90% of the codebase</div>
                 <div class="small text-secondary">Fully tested on PHP: v8.x+</div>
               </div>
             </div>
@@ -506,7 +504,7 @@ php unit_tests/tests.php --simple  <span class="tk-cmt"># quiet counts only</spa
             <span class="brand-mark sm" aria-hidden="true">
               <svg viewBox="0 0 64 64" width="28" height="28"><use href="#gNav"/></svg>
             </span>
-            <span class="fw-semibold">sluz</span> <span class="text-secondary small">pronounced “slooz”</span>
+            <span class="fw-semibold">Sluz</span> <span class="text-secondary small">pronounced “slooz”</span>
           </div>
           <p class="small text-secondary mb-2">A lite, Smarty-like templating system. One file, zero dependencies.</p>
           <p class="small text-secondary mb-0">© 2026 The Sluz Project · <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener">GPL-3.0-or-later</a></p>
