@@ -131,7 +131,7 @@
 <span class="tk-var">$s</span> = <span class="tk-kw">new</span> <span class="tk-fn">sluz</span>();
 
 <span class="tk-var">$s</span>-><span class="tk-fn">assign</span>(<span class="tk-str">'name'</span>, <span class="tk-str">'Jason'</span>);
-<span class="tk-var">$s</span>-><span class="tk-fn">assign</span>(<span class="tk-str">'items'</span>, [<span class="tk-str">'PHP'</span>, <span class="tk-str">'Perl'</span>, <span class="tk-str">'JS'</span>]);
+<span class="tk-var">$s</span>-><span class="tk-fn">assign</span>(<span class="tk-str">'languages'</span>, [<span class="tk-str">'PHP'</span>, <span class="tk-str">'Perl'</span>, <span class="tk-str">'JS'</span>]);
 
 <span class="tk-kw">print</span> <span class="tk-var">$s</span>-><span class="tk-fn">fetch</span>(<span class="tk-str">'tpls/script.stpl'</span>);</code></pre>
 									</div>
@@ -147,7 +147,7 @@
 <pre><code id="code-stpl"><span class="tk-tag">&lt;h1&gt;</span>Hello <span class="tk-var">{$name</span><span class="tk-mod">|default:"world"</span><span class="tk-var">}</span><span class="tk-tag">&lt;/h1&gt;</span>
 
 <span class="tk-tag">&lt;ul&gt;</span>
-<span class="tk-kw">{foreach</span> <span class="tk-var">$items</span> <span class="tk-kw">as</span> <span class="tk-var">$item</span><span class="tk-kw">}</span>
+<span class="tk-kw">{foreach</span> <span class="tk-var">$languages</span> <span class="tk-kw">as</span> <span class="tk-var">$item</span><span class="tk-kw">}</span>
 	<span class="tk-tag">&lt;li&gt;</span><span class="tk-var">{$item</span><span class="tk-mod">|strtoupper</span><span class="tk-var">}</span><span class="tk-tag">&lt;/li&gt;</span>
 <span class="tk-kw">{/foreach}</span>
 <span class="tk-tag">&lt;/ul&gt;</span>
