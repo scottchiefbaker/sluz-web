@@ -296,13 +296,16 @@
 						<div class="step-num">1</div>
 						<h3 class="h5 fw-semibold">Install</h3>
 						<p class="small text-secondary">Composer or single-file drop-in — you choose.</p>
-						<div class="window window-compact mt-3" data-code>
-							<div class="window-head"><span class="window-title">Terminal</span><button class="copy-btn sm" type="button" data-copy-target="#qs-install" aria-label="Copy"><i class="bi bi-clipboard"></i></button></div>
-<pre><code id="qs-install"><span class="tk-cmt"># via Composer</span>
-composer require sluz/sluz
-
-<span class="tk-cmt"># or just grab the one file you need</span>
-curl -O https://www.sluz.org/latest/sluz.class.php</code></pre>
+						<div class="d-flex flex-column gap-2 mt-3">
+							<div class="window window-compact" data-code>
+								<div class="window-head"><span class="window-title">Composer</span><button class="copy-btn sm" type="button" data-copy-target="#qs-install-composer" aria-label="Copy Composer command"><i class="bi bi-clipboard"></i></button></div>
+<pre><code id="qs-install-composer">composer require sluz/sluz</code></pre>
+							</div>
+							<div class="text-center small text-secondary">or</div>
+							<div class="window window-compact" data-code>
+								<div class="window-head"><span class="window-title">Direct download</span><button class="copy-btn sm" type="button" data-copy-target="#qs-install-curl" aria-label="Copy curl command"><i class="bi bi-clipboard"></i></button></div>
+<pre><code id="qs-install-curl">curl -O https://www.sluz.org/latest/sluz.class.php</code></pre>
+							</div>
 						</div>
 					</div>
 				</div>
