@@ -156,7 +156,10 @@
 								</div>
 								<div class="col-12">
 									<div class="preview-window">
-										<div class="preview-head"><i class="bi bi-eye me-1"></i> Rendered output</div>
+										<div class="preview-head">
+											<span class="dots"><i></i><i></i><i></i></span>
+											<span><i class="bi bi-eye me-1"></i> Rendered output</span>
+										</div>
 										<div class="preview-body">
 											<div class="preview-title">Hello Jason</div>
 											<ul class="preview-list">
