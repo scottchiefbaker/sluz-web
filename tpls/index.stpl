@@ -273,7 +273,7 @@
 							<tr><td><code>{foreach $a as $k => $v}</code></td><td><code>{foreach $m as $k => $v}{$k}{/foreach}</code></td><td>012</td></tr>
 							<tr><td><code>$__FOREACH_FIRST/_LAST/_INDEX</code></td><td><code>{if $__FOREACH_FIRST}…{/if}</code></td><td class="text-secondary">—</td></tr>
 							<tr><td><code>{include file='…'}</code></td><td><code>{include file='header.stpl'}</code></td><td class="text-secondary">—</td></tr>
-							<tr><td><code>{literal}…{/literal}</code></td><td><code>{literal}function foo() { {/literal}</code></td><td><code>function foo() {</code></td></tr>
+							<tr><td><code>&#123;literal&#125;…&#123;/literal&#125;</code></td><td><code>&#123;literal&#125;function foo() &#123; &#123;/literal&#125;</code></td><td><code>function foo() &#123;</code></td></tr>
 							<tr><td><code>{* comment *}</code></td><td><code>{* hidden *}</code></td><td class="text-secondary"><em>(empty)</em></td></tr>
 							<tr><td><code>{function()}</code></td><td><code>{count($array)}</code></td><td>3</td></tr>
 						</tbody>
