@@ -79,7 +79,6 @@ body::before{
 .navbar .nav-link{font-size:.92rem;font-weight:500;color:var(--sluz-muted)!important}
 .navbar .nav-link:hover,.navbar .nav-link.active{color:var(--sluz-text)!important}
 .navbar-toggler{border-color:var(--sluz-border)}
-.navbar-toggler-icon{filter:invert(.9)}
 
 /* Buttons */
 .btn-gradient{
