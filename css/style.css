@@ -94,6 +94,12 @@ body::before{
 .btn-ghost:hover{background:rgba(148,163,184,.13);border-color:var(--sluz-border-strong);color:#fff}
 .btn-sm{padding:.38rem .75rem;font-size:.88rem}
 
+@media (max-width:991.98px){
+  #navMenu .btn{min-width:10em;text-align:center;margin-bottom:.75rem}
+  #navMenu .nav-item.ms-lg-2,
+  #navMenu .nav-item.ms-lg-1{margin-left:0}
+}
+
 /* Hero */
 .hero{padding:118px 0 44px}
 .hero-glow{
