@@ -121,7 +121,8 @@ body::before{
   background:rgba(148,163,184,.09);border:1px solid var(--sluz-border);color:var(--sluz-muted);
 }
 .lead{font-size:1.06rem;line-height:1.6}
-.hero-actions .btn{min-width:11.5rem;text-align:center;justify-content:center}
+.hero-actions .btn,
+.cta-actions .btn{min-width:11.5rem;text-align:center;justify-content:center}
 code{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.88em}
 code, pre, .window pre, .mode-code, .req-code, .cmd-pill code{
   font-variant-ligatures:none;
