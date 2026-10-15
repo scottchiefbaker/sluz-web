@@ -1,0 +1,745 @@
+# Sluz
+
+> Sluz is a minimalistic, zero-dependency, single-file PHP templating engine with
+> Smarty-like syntax. It separates logic (.php files) from presentation (.stpl
+> templates). Requires PHP 8.0 or newer.
+
+This file contains the full text of every Sluz documentation example: the PHP source
+and the paired template for each page. The short index is in llms.txt.
+
+## Syntax Reference
+
+This section summarizes the template language as implemented in `sluz.class.php`
+(engine version 0.9.8). The examples below show each feature.
+
+### Blocks and delimiters
+
+- Blocks are wrapped in `{` and `}`. Text outside blocks is output unchanged.
+- A `{` with whitespace on both sides is plain text. This is why CSS and JavaScript
+  braces usually work without `{literal}`.
+- Whitespace just inside a block, such as `{$x }` or `{ $x}`, is an error (50981).
+  The exception is a `{` with whitespace on both sides, which is plain text.
+- Delimiters can be changed with `set_delimiters('[', ']')`. Both must be single,
+  different characters. Comments then use `[*` and `*]`.
+
+### Comments
+
+```text
+{* This is a comment and produces no output. It may span
+   several lines. *}
+```
+
+The line ending after a comment is removed from the output.
+
+### Variables
+
+- `{$name}` prints the value. An unassigned variable prints nothing.
+- Dot notation reads array keys: `{$user.name.first}`. Numeric keys work too: `{$list.0}`.
+- An array printed directly outputs the word `Array`.
+- `{$name|default:"Guest"}` uses the fallback when the value is unset, null, or empty.
+  The fallback must be a quoted string or a number, not a variable.
+- Assign several values at once with `$s->assign(['key' => 'value', ...])`.
+
+### Modifiers
+
+- `{$value|function}` calls the PHP function `function($value)`. The variable is always
+  the first argument.
+- Chain modifiers with more `|` characters: `{$name|strtolower|ucfirst}`.
+- Pass arguments after a colon, separated by commas: `{$name|substr:0,3}`.
+  Arguments are quoted strings or numbers. Variables are not supported as arguments.
+- Any callable function works, including your own functions defined in PHP.
+- Unknown functions produce error 47204. Exceptions and type errors produce 79134 and
+  58200.
+
+### Escaping
+
+- `{$value|escape}` encodes HTML. This is the default type.
+- `{$value|escape:"url"}` uses `rawurlencode()`.
+- `{$value|escape:"js"}` returns a JSON string, including the surrounding double
+  quotes. Use it without adding quotes of your own: `var v = {$value|escape:"js"};`.
+- An unknown escape type outputs an error string (65491) instead of stopping the script.
+- `$s->setEscapeHtml(true)` escapes every `{$var}`. Use `|raw` or `|escape` to opt out
+  for one value.
+
+### Expressions
+
+Blocks that are not variables, `if`, `foreach`, `include`, or `literal` are evaluated as
+PHP expressions:
+
+```text
+{$count + 3}
+{3 + 4}
+{"Hello" . " " . $name}
+```
+
+The result must be a string or a number. Booleans and null produce error 18933. Blocks
+that contain no quotes, digits, `$`, or parentheses are rejected as unknown blocks
+(73467).
+
+### If, elseif, else
+
+```text
+{if $score >= 90}A{elseif $score >= 80}B{else}C{/if}
+```
+
+- The syntax is `{elseif condition}`. The space after `elseif` is required.
+- Comparisons: `==`, `!=`, `===`, `!==`, `<`, `<=`, `>`, `>=`.
+- Logic: `!`, `&&`, `||`, and parentheses.
+- An unassigned variable is treated as false. `{if !$missing}` is true.
+- Word operators such as `eq` and `ne` are not supported.
+- A missing `{/if}` produces error 45821.
+
+### Foreach
+
+```text
+{foreach $items as $item}{$item}{/foreach}
+{foreach $hash as $key => $value}{$key}: {$value}{/foreach}
+{foreach $user.tags as $tag}{$tag}{/foreach}
+```
+
+- The source can be a dotted path.
+- A scalar source loops once. A null source loops zero times.
+- `$__FOREACH_FIRST`, `$__FOREACH_LAST`, and `$__FOREACH_INDEX` are set inside the loop.
+  They are only computed when the block uses them.
+- Loop variables do not exist after the `{/foreach}`.
+
+### Include
+
+```text
+{include file='tpls/header.stpl'}
+{include file='tpls/card.stpl' title="Welcome" size="large"}
+```
+
+- Paths are relative to the directory of the PHP script that calls `fetch()`.
+- Extra `key="value"` pairs are assigned to the included template. Values must be quoted.
+  Variables may appear inside double quotes, such as `"$name"`.
+- Variables set for the include are restored after it finishes.
+- A missing file produces error 18485 or 68493.
+
+### Literal
+
+```text
+{literal}function f() { return {a: 1}; }{/literal}
+```
+
+Content inside `{literal}` is output unchanged, including any `{...}` blocks.
+
+### Parent and child templates
+
+- `$s->fetch('child.stpl', 'parent.stpl')` renders the child inside the parent.
+- `$s->parent_tpl('parent.stpl')` sets a parent for every later `fetch()`.
+- The parent template receives `$__CHILD_TPL`, the child's path. Include it with
+  `{include file="$__CHILD_TPL"}`.
+
+### PHP API
+
+```php
+$s = new sluz();
+$s->assign('name', 'value');
+$s->assign(['k1' => 'v1', 'k2' => 'v2']);
+print $s->fetch('tpls/page.stpl');             // Template file
+print $s->parse_string('Hello {$name}');       // String template
+$s->display('tpls/page.stpl');                 // Same as print fetch()
+print $s->fetch(SLUZ_INLINE);                  // Template after __halt_compiler();
+$s->setEscapeHtml(true);                       // Auto-escape {$var} output
+$s->set_delimiters('[', ']');                  // Change delimiters
+```
+
+`sluz()` in simple mode sets a value and returns the object. Its output is printed
+automatically when the script ends.
+
+### Error output
+
+Most errors print an HTML page with a code and message, then stop the script.
+Code 65491 is the exception described under Escaping.
+
+| Code  | Meaning                                  |
+|-------|------------------------------------------|
+| 18485 | Unable to load include template          |
+| 18933 | Bad function, expression, or condition   |
+| 42280 | Unable to load template file             |
+| 45821 | Unclosed tag, such as a missing `{/if}`  |
+| 47204 | Unknown function call in a modifier      |
+| 50981 | Whitespace next to delimiters            |
+| 58200 | TypeError in a modifier call             |
+| 65491 | Unknown escape type                      |
+| 68493 | Missing file in an include block         |
+| 73467 | Unknown block type                       |
+| 79134 | Exception in a modifier call             |
+
+### Security
+
+Expressions and conditions are run with PHP `eval()`. Only use templates that you
+control, and never use user input as template source.
+
+## 001_basic_vars
+
+Source: https://www.sluz.org/docs/?doc=001_basic_vars
+
+### 001_basic_vars.php
+
+```php
+<?php
+
+///////////////////////////////////////////////////////////////////////////////
+// Basic syntax for assigning variables to the templating system. You can    //
+// assign scalars, arrays, and hashes.                                       //
+///////////////////////////////////////////////////////////////////////////////
+
+include("../sluz.class.php");
+$s = new sluz();
+
+$s->assign("first", "Jason"); // Scalar syntax
+$s->assign("last" , "Doolis");
+
+$s->assign("month", ["Jan", "Feb", "Mar"]); // Array syntax
+$s->assign("data" , ["color" => "red"]);    // Hash syntax
+
+print $s->fetch("tpls/001_basic_vars.stpl");
+```
+
+### 001_basic_vars.stpl
+
+```text
+<h1>Welcome</h1>
+
+<p>Hello {$first} {$last}</p>
+
+<p>The first month of the year is {$month.0}</p>
+
+<p>My favorite color is {$data.color}</p>
+```
+
+## 002_default_values
+
+Source: https://www.sluz.org/docs/?doc=002_default_values
+
+### 002_default_values.php
+
+```php
+<?php
+
+///////////////////////////////////////////////////////////////////////////////
+// A variable that is: null, empty string, or not assign() can be given      //
+// a default value in the template.                                          //
+//                                                                           //
+// Note: The default value must be a scalar (not a variable)                 //
+///////////////////////////////////////////////////////////////////////////////
+
+include("../sluz.class.php");
+$s = new sluz();
+
+$s->assign("name", "Jason Doolis");
+//$s->assign("greeting", "Hola"); // If we don't send this, the default it used
+
+print $s->fetch("tpls/002_default_values.stpl");
+```
+
+### 002_default_values.stpl
+
+```text
+<p>{$greeting|default:"Hello"} {$name}</p>
+```
+
+## 010_basic_if
+
+Source: https://www.sluz.org/docs/?doc=010_basic_if
+
+### 010_basic_if.php
+
+```php
+<?php
+
+///////////////////////////////////////////////////////////////////////////////
+// Conditional syntax is available in the form of if/else.                   //
+//                                                                           //
+// Note: When an if statement references a variable that is *not assigned it //
+// will be treated as if it were false.                                      //
+///////////////////////////////////////////////////////////////////////////////
+
+include("../sluz.class.php");
+$s = new sluz();
+
+$s->assign("weekday", date("D"));
+$s->assign("kitten_count", 7);
+$s->assign("verbose", true);
+
+print $s->fetch("tpls/010_basic_if.stpl");
+```
+
+### 010_basic_if.stpl
+
+```text
+{if $weekday === "Wed"}
+<h1>It is Wednesday</h1>
+{else}
+<h1>It is not Wednesday</h1>
+{/if}
+
+{if $kitten_count > 4}<p>You have a lot of kittens</p>{/if}
+
+{if !$quiet}<div>Here is some detailed information</div>{/if}
+
+{if $verbose && !$quiet}Since we are not quiet, here is even more information{/if}
+```
+
+## 030_basic_foreach
+
+Source: https://www.sluz.org/docs/?doc=030_basic_foreach
+
+### 030_basic_foreach.php
+
+```php
+<?php
+
+///////////////////////////////////////////////////////////////////////////////
+// Foreach works just like native PHP, on either arrays or hashes.           //
+//                                                                           //
+// Array syntax: {foreach $foo as $bar}                                      //
+// Hash syntax : {foreach $foo as $key => $val}                              //
+///////////////////////////////////////////////////////////////////////////////
+
+include("../sluz.class.php");
+$s = new sluz();
+
+$s->assign("turtles", ["Michelangeo", "Donatello", "Leonardo", "Raphael"]); // Array
+$s->assign("numbers", ["one" => "uno", "two" => "dos", "three" => "tres"]); // Hash
+
+print $s->fetch("tpls/030_basic_foreach.stpl");
+```
+
+### 030_basic_foreach.stpl
+
+```text
+<ul>
+{foreach $turtles as $name}
+	<li>{$name}</li>
+{/foreach}
+</ul>
+
+{foreach $numbers as $english => $spanish}
+<div>{$english} => {$spanish}</div>
+{/foreach}
+```
+
+## 031_advanced_foreach
+
+Source: https://www.sluz.org/docs/?doc=031_advanced_foreach
+
+### 031_advanced_foreach.php
+
+```php
+<?php
+
+///////////////////////////////////////////////////////////////////////////////
+// {foreach} blocks apply special variables on each loop interation. They    //
+// are: $__FOREACH_FIRST, $__FOREACH_LAST, $__FOREACH_INDEX. First/Last will //
+// be true if it is either first of last interation, and the index will be   //
+// set the loop iteration number (starting at zero).                         //
+///////////////////////////////////////////////////////////////////////////////
+
+include("../sluz.class.php");
+$s = new sluz();
+
+$s->assign("turtles", ["Michelangelo", "Donatello", "Leonardo", "Raphael"]); // Array
+
+print $s->fetch("tpls/031_advanced_foreach.stpl");
+```
+
+### 031_advanced_foreach.stpl
+
+```text
+<p>
+{foreach $turtles as $name}
+<div style="background: {if $__FOREACH_FIRST}orange{elseif $__FOREACH_LAST}red{else}yellow{/if}">{$name}</div>
+{/foreach}
+</p>
+
+<p>
+{foreach $turtles as $name}
+<div>{$__FOREACH_INDEX}) {$name}</div>
+{/foreach}
+</p>
+```
+
+## 040_literal_blocks
+
+Source: https://www.sluz.org/docs/?doc=040_literal_blocks
+
+### 040_literal_blocks.php
+
+```php
+<?php
+
+///////////////////////////////////////////////////////////////////////////////
+// You may need a literal '{' or '}' in your HTML. These characters are      //
+// common in both CSS and Javascript. To prevent Sluz from interpretting     //
+// them as code blocks use {literal}.                                        //
+//                                                                           //
+// Note: Brackets with whitespace on both sides do NOT require {literal}     //
+///////////////////////////////////////////////////////////////////////////////
+
+include("../sluz.class.php");
+$s = new sluz();
+
+$s->assign("name", "Jason Doolis");
+
+print $s->fetch("tpls/040_literal_blocks.stpl");
+```
+
+### 040_literal_blocks.stpl
+
+```text
+<script>
+	var name = "{$name}";
+
+	{literal}
+	function hello_world() {
+		alert("Hi there " + name);
+	}
+	{/literal}
+</script>
+
+<button onclick="hello_world();">Click me</button>
+```
+
+## 045_include
+
+Source: https://www.sluz.org/docs/?doc=045_include
+
+### 045_include.php
+
+```php
+<?php
+
+///////////////////////////////////////////////////////////////////////////////
+// You can include external templates in your .stpl files. This allows you   //
+// to have a common header, footer, or framework. Included files have all    //
+// the same properties as normal templates. Templates in {include} tags      //
+// need to be pathed *relative* to the calling PHP script.                   //
+///////////////////////////////////////////////////////////////////////////////
+
+include("../sluz.class.php");
+$s = new sluz();
+
+$s->assign("first", "Jason"); // Scalar syntax
+$s->assign("last" , "Doolis");
+
+print $s->fetch("tpls/045_include.stpl");
+```
+
+### 045_include.stpl
+
+```text
+{include file='tpls/header.stpl'}
+
+<p>Hello {$first} {$last}</p>
+```
+
+## 046_external_functions
+
+Source: https://www.sluz.org/docs/?doc=046_external_functions
+
+### 046_external_functions.php
+
+```php
+<?php
+
+///////////////////////////////////////////////////////////////////////////////
+// Templates can call external functions. Any function that is callable in   //
+// normal scope can be used: global PHP functions, or user functions.        //
+// Functions will be called with the template variable being the first       //
+// parameter, and other params after.                                        //
+//                                                                           //
+// Example: `{$name|strtoupper}` maps to `strtoupper($name)`                 //
+// Example: `{$name|substr:0,3}` maps to `substr($name, 0, 3)`               //
+///////////////////////////////////////////////////////////////////////////////
+
+include("../sluz.class.php");
+$s = new sluz();
+
+$s->assign("name" , "Jason Doolis"); // Scalar syntax
+$s->assign("numbers" , [4,1,9,7,2]); // Array syntax
+
+print $s->fetch("tpls/046_external_functions.stpl");
+
+///////////////////////////////////////////////////////////////////////////////
+
+function join_comma(array $arr, string $separator = ", ") {
+	return join($separator, $arr);
+}
+
+function initials($str) {
+	$ret = '';
+
+	foreach (preg_split('/ /', $str) as $x) { $ret .= substr($x, 0, 1); }
+
+	return $ret;
+}
+```
+
+### 046_external_functions.stpl
+
+```text
+<p>Uppercase: {$name|strtoupper}</p>
+<p>Initials: {$name|initials}</p>
+<p>Numbers Comma: {$numbers|join_comma}</p>
+<p>Numbers Semi-colon: {$numbers|join_comma:"; "}</p>
+<p>Substring: {$name|substr:0,3}</p>
+```
+
+## 047_alternate_templates
+
+Source: https://www.sluz.org/docs/?doc=047_alternate_templates
+
+### 047_alternate_templates.php
+
+```php
+<?php
+
+///////////////////////////////////////////////////////////////////////////////
+// If you want to use an alternate template specify it when you call fetch() //
+///////////////////////////////////////////////////////////////////////////////
+
+include("../sluz.class.php");
+$s = new sluz();
+
+$s->assign("name", "Jason Doolis"); // Scalar syntax
+$hour = date("H");
+
+if ($hour > 17) {
+	print $s->fetch("tpls/dark_mode.stpl");
+} else {
+	print $s->fetch("tpls/light_mode.stpl");
+}
+```
+
+### 047_alternate_templates.stpl
+
+```text
+<body style="background: lightgray; color: black">Light mode</body>
+```
+
+## 050_simple_mode
+
+Source: https://www.sluz.org/docs/?doc=050_simple_mode
+
+### 050_simple_mode.php
+
+```php
+<?php
+
+///////////////////////////////////////////////////////////////////////////////
+// Simple mode allows you to use a function oriented syntax instead of the   //
+// object oriented syntax. This decreases the number of function calls       //
+// needed to run sluz. Less typing = better?                                 //
+///////////////////////////////////////////////////////////////////////////////
+
+require('../sluz.class.php');
+
+// sluz() is an alias for $s->assign($key, $value) and returns a sluz object
+$s = sluz("weather", "Sure is sunny today");
+$s = sluz("temperature", 75);
+
+// Note: fetch() is called automatically in simple mode as part of the destructor.
+// The template file used is the PHP filename with the `.php` changed to `.stpl`
+// in the `tpls/` directory. Example: `myscript.php` => `/tpls/myscript.stpl`
+//
+// If you need an alternate template you will need to call fetch() manually:
+// print $s->fetch("tpls/special.stpl");
+```
+
+### 050_simple_mode.stpl
+
+```text
+<h1>Welcome to the weather page</h1>
+
+<h3>{$weather}</h3>
+
+<p>It is {$temperature} degrees outside</p>
+```
+
+## 060_inline_mode
+
+Source: https://www.sluz.org/docs/?doc=060_inline_mode
+
+### 060_inline_mode.php
+
+```php
+<?php
+
+///////////////////////////////////////////////////////////////////////////////
+// Instead of loading a template file we can use a template that is inline   //
+// with your PHP code. We use the __halt_compiler() pragma to allow us to    //
+// insert template content into PHP files.                                   //
+///////////////////////////////////////////////////////////////////////////////
+
+require('../sluz.class.php');
+
+$s = new sluz;
+$s->assign("name", "Jason Doolis");
+$s->assign("turtles", ["Michelangeo", "Donatello", "Leonardo", "Raphael"]);
+
+print $s->fetch(SLUZ_INLINE);
+
+////////////////////////////////////////////////////
+
+__halt_compiler();
+
+<h1>Hello {$name}</h1>
+
+{foreach $turtles as $t}
+<div>{$t}</div>
+{/foreach}
+```
+
+## 065_inline_simple_mode
+
+Source: https://www.sluz.org/docs/?doc=065_inline_simple_mode
+
+### 065_inline_simple_mode.php
+
+```php
+<?php
+
+///////////////////////////////////////////////////////////////////////////////
+// Combine both inline mode, and simple mode to minimize the lines of code   //
+// required to instatiate and call Sluz. This also combines your logic and   //
+// presentation in to one file. Great for simple projects.                   //
+///////////////////////////////////////////////////////////////////////////////
+
+require('../sluz.class.php');
+
+// Use hash mode to send multiple items at once
+$data = ['name' => 'Jason', 'age' => 13, 'animal' => 'kitten'];
+$s    = sluz($data);
+
+////////////////////////////////////////////////////
+
+__halt_compiler();
+
+<h1>Hello {$name}</h1>
+
+<p>I am {$age} years old and I really like my {$animal}</p>
+```
+
+## 070_parent_child
+
+Source: https://www.sluz.org/docs/?doc=070_parent_child
+
+### 070_parent_child.php
+
+```php
+<?php
+
+////////////////////////////////////////////////////////////////////////////
+// It's common to have a global header/footer and include content in the  //
+// middle. This can be accomplished with a parent template. When a parent //
+// template is specified $__CHILD_TPL is populated with the original      //
+// template filename. This can then be {include file="$__CHILD_TPL"} in   //
+// the parent.                                                            //
+////////////////////////////////////////////////////////////////////////////
+
+require('../sluz.class.php');
+$s = new sluz();
+
+// Two parameter fetch()
+print $s->fetch("tpls/070_child.stpl", "tpls/070_parent.stpl");
+
+// You can also set a parent template and then use normal fetch()
+//$s->parent_tpl("tpls/070_parent.stpl");
+//print $s->fetch("tpls/070_child.stpl");
+```
+
+### 070_parent.stpl
+
+```text
+<h2>Header</h2>
+{include file="$__CHILD_TPL"}
+<h4>Footer</h4>
+```
+
+### 070_child.stpl
+
+```text
+This content is from <code>070_child.stpl</code>
+```
+
+## 080_escape
+
+Source: https://www.sluz.org/docs/?doc=080_escape
+
+### 080_escape.php
+
+```php
+<?php
+
+///////////////////////////////////////////////////////////////////////////////
+// The escape modifier safely encodes output to prevent XSS.                 //
+// Supported types: 'html' (default), 'url', and 'js'.                       //
+///////////////////////////////////////////////////////////////////////////////
+
+include("../sluz.class.php");
+$s = new sluz();
+
+$s->assign("name", "<script>alert('XSS')</script>");
+$s->assign("url_path", "hello world");
+$s->assign("js_val", "It's a \"test\"");
+
+print $s->fetch("tpls/080_escape.stpl");
+```
+
+### 080_escape.stpl
+
+```text
+<h1>Escape Modifier</h1>
+
+<p>HTML escaped: {$name|escape}</p>
+
+<p>URL escaped: {$url_path|escape:"url"}</p>
+
+<p>JS escaped: {$js_val|escape:"js"}</p>
+```
+
+## 085_autoescape
+
+Source: https://www.sluz.org/docs/?doc=085_autoescape
+
+### 085_autoescape.php
+
+```php
+<?php
+
+///////////////////////////////////////////////////////////////////////////////
+// Auto-escape mode automatically HTML-encodes all {$var} output.            //
+// Use |raw to opt out for trusted content.                                  //
+///////////////////////////////////////////////////////////////////////////////
+
+include("../sluz.class.php");
+$s = new sluz();
+
+$s->setEscapeHtml(true);
+
+$s->assign("name"        , "<b>Scott</b>");
+$s->assign("user_input"  , "<script>alert('XSS')</script>");
+$s->assign("trusted_html", "<em>Safe HTML</em>");
+
+print $s->fetch("tpls/085_autoescape.stpl");
+```
+
+### 085_autoescape.stpl
+
+```text
+<h1>Auto-escape Mode</h1>
+
+<p>Raw variable: {$name}</p>
+
+<p>User input (auto-escaped): {$user_input}</p>
+
+<p>Trusted HTML with |raw: {$trusted_html|raw}</p>
+
+<p>Chained with |escape (no double-escape): {$user_input|escape}</p>
+
+<p>Chained with |strtoupper then auto-escaped: {$name|strtoupper}</p>
+```
+

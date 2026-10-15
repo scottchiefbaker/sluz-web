@@ -1,0 +1,61 @@
+# Sluz
+
+> Sluz is a minimalistic, zero-dependency, single-file PHP templating engine with
+> Smarty-like syntax. It separates logic (.php files) from presentation (.stpl
+> templates). Requires PHP 8.0 or newer.
+
+The engine is the single file `sluz.class.php`. Templates use `{...}` delimiters
+(customizable) for variables, modifiers, `{if}`, `{foreach}`, `{include}`,
+`{literal}`, and comments. Parent/child templates, simple mode, inline mode, and
+auto-escaping are supported.
+
+## Documentation
+
+- [Basic Vars](https://www.sluz.org/docs/?doc=001_basic_vars): Assigning scalars,
+  arrays, and hashes to templates with `assign()`
+- [Default Values](https://www.sluz.org/docs/?doc=002_default_values): Default values
+  for variables that are null, empty, or unassigned
+- [Basic If](https://www.sluz.org/docs/?doc=010_basic_if): `if` / `else` conditionals;
+  unassigned variables evaluate as false
+- [Basic Foreach](https://www.sluz.org/docs/?doc=030_basic_foreach): Looping over
+  arrays and hashes
+- [Advanced Foreach](https://www.sluz.org/docs/?doc=031_advanced_foreach): The
+  `$__FOREACH_FIRST`, `$__FOREACH_LAST`, and `$__FOREACH_INDEX` loop variables
+- [Literal Blocks](https://www.sluz.org/docs/?doc=040_literal_blocks): Using `{literal}`
+  to output literal braces, for example in CSS and JavaScript
+- [Include](https://www.sluz.org/docs/?doc=045_include): Including external templates
+  with `{include}`, with paths relative to the calling PHP script
+- [External Functions](https://www.sluz.org/docs/?doc=046_external_functions): Calling
+  global or user PHP functions from templates
+- [Alternate Templates](https://www.sluz.org/docs/?doc=047_alternate_templates):
+  Choosing a different template file in `fetch()`
+- [Simple Mode](https://www.sluz.org/docs/?doc=050_simple_mode): Function-oriented
+  syntax using the global `sluz()` helper
+- [Inline Mode](https://www.sluz.org/docs/?doc=060_inline_mode): Storing templates
+  inside the PHP file after `__halt_compiler()`
+- [Inline Simple Mode](https://www.sluz.org/docs/?doc=065_inline_simple_mode): Combining
+  inline and simple mode in one file
+- [Parent Child](https://www.sluz.org/docs/?doc=070_parent_child): Parent layouts with
+  `$__CHILD_TPL` for shared headers and footers
+- [Escape](https://www.sluz.org/docs/?doc=080_escape): The `escape` modifier with
+  `html`, `url`, and `js` types
+- [Autoescape](https://www.sluz.org/docs/?doc=085_autoescape): Automatic HTML-encoding
+  of `{$var}` output, with `|raw` to opt out
+
+## Engine and Source
+
+- [sluz.class.php](https://www.sluz.org/latest/sluz.class.php): Current single-file
+  engine, for direct download
+- [GitHub repository](https://github.com/scottchiefbaker/sluz): Source code, issues,
+  and releases
+- [Packagist package](https://packagist.org/packages/sluz/sluz): Composer package
+  `sluz/sluz`
+- [Release notes](https://github.com/scottchiefbaker/sluz/releases): Changes by version
+
+## Optional
+
+- [Project site](https://sluz.org/): Overview and quick start
+- [Ports](https://github.com/scottchiefbaker/js-Template-Sluz): JavaScript port
+  (`js-Template-Sluz`)
+- [Perl port](https://github.com/scottchiefbaker/perl-Template-Sluz): Perl port
+  (`perl-Template-Sluz`)
