@@ -121,6 +121,7 @@ body::before{
   background:rgba(148,163,184,.09);border:1px solid var(--sluz-border);color:var(--sluz-muted);
 }
 .lead{font-size:1.06rem;line-height:1.6}
+.hero-actions .btn{min-width:11.5rem;text-align:center;justify-content:center}
 code{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:.88em}
 code, pre, .window pre, .mode-code, .req-code, .cmd-pill code{
   font-variant-ligatures:none;
@@ -135,10 +136,12 @@ li code, p code, .callout code{white-space:nowrap}
   padding:.42rem .42rem .42rem .95rem;
   font-family:'JetBrains Mono',monospace;font-size:.88rem;
   box-shadow:0 8px 28px rgba(0,0,0,.35);
+  width:100%;
   max-width:100%;
 }
 .cmd-prompt{color:var(--sluz-cyan);font-weight:700}
-.cmd-pill code{color:#e2e8f0;white-space:nowrap}
+.cmd-pill code{color:#e2e8f0;white-space:nowrap;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis}
+.cmd-pill .copy-btn{margin-left:auto;flex-shrink:0}
 .hero-meta i{font-size:.95em}
 
 /* Code windows */
